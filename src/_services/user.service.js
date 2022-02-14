@@ -5,24 +5,25 @@ export const userService = {
     login,
     logout,
     register,
+    createForm,
     getAll,
     getById,
     update,
     delete: _delete
 };
 
-function login(username, password) {
+function login(email, password) {
     const requestOptions = {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username, password })
+        body: JSON.stringify({ email, password })
     };
 
-    return fetch(`${config.apiUrl}/users/authenticate`, requestOptions)
+    return fetch(`${config.apiUrl}/login`, requestOptions)
         .then(handleResponse)
         .then(user => {
             // login successful if there's a jwt token in the response
-            if (user.token) {
+            if (user.access_token) {
                 // store user details and jwt token in local storage to keep user logged in between page refreshes
                 localStorage.setItem('user', JSON.stringify(user));
             }
@@ -44,6 +45,33 @@ function register(user) {
     };
 
     return fetch(`${config.apiUrl}/users/register`, requestOptions).then(handleResponse);
+}
+
+function createForm(title, inputs) {
+    const formObject = {
+        title,
+        fields: inputs.map((input) => {
+            return {
+                type: input.type,
+                name: input.name,
+                label: input.name.toLowerCase().replace(/ /g, '_').replace(/[^\w-]+/g, '')
+            }
+        })
+    }
+    let user = JSON.parse(localStorage.getItem('user'));
+
+    const requestOptions = {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + user.access_token 
+        },
+        body: JSON.stringify(formObject)
+    };
+
+    console.log(requestOptions);
+
+    return fetch(`${config.apiUrl}/forms`, requestOptions).then(handleResponse);
 }
 
 function getAll() {

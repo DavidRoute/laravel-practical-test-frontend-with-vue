@@ -44,6 +44,24 @@ const actions = {
                     dispatch('alert/error', error, { root: true });
                 }
             );
+    },
+    createForm({dispatch, commit}, {title, inputs}) {
+        commit('createFormRequest');
+        
+        userService.createForm(title, inputs)
+            .then(() => {
+                commit('createFormSuccess');
+                router.push('/')
+                setTimeout(() => {
+                    // display success message after route change completes
+                    dispatch('alert/success', 'Create Form successful', { root: true });
+                })
+            },
+            error => {
+                commit('createFormFailure', error);
+                dispatch('alert/error', error, { root: true});
+            }
+        )
     }
 };
 
@@ -72,7 +90,16 @@ const mutations = {
     },
     registerFailure(state, error) {
         state.status = {};
-    }
+    },
+    createFormRequest(state) {
+        state.status = { formCreating: true};
+    },
+    createFormSuccess(state) {
+        state.status = {};
+    },
+    createFormFailure(state, error) {
+        state.status = {};
+    },
 };
 
 export const account = {
