@@ -38,13 +38,14 @@ function logout() {
 }
 
 function register(user) {
+    console.log("User :", user);
     const requestOptions = {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(user)
     };
 
-    return fetch(`${config.apiUrl}/users/register`, requestOptions).then(handleResponse);
+    return fetch(`${config.apiUrl}/register`, requestOptions).then(handleResponse);
 }
 
 function createForm(title, inputs) {
